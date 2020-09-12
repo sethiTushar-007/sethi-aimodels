@@ -1,0 +1,173 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Image Classification</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->
+    <link rel="shortcut icon" href="{% static 'contract.png' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'contract.png' %}" type="image/x-icon">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'fonts/iconic/css/material-design-iconic-font.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/animate/animate.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/css-hamburgers/hamburgers.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/animsition/css/animsition.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/select2/select2.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/daterangepicker/daterangepicker.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/util.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style4.css' %}">
+    <!--===============================================================================================-->
+</head>
+<body>
+    
+    <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100">
+                <div class="text-center">
+                    <a href="../" class="gotohome">Go to home</a>
+                </div>
+
+                <br /><br />
+                <span class="login100-form-title p-b-10">
+                    Image Classification - 1000 Classes
+                </span>
+                {% if is_prediction %}
+                <div class="profile-pic text-center p-t-30 p-b-26">
+                    <img src="{{img_url}}">
+                </div>
+                <div class="text-center p-t-30 p-b-30">
+                    <span>
+                        Image classified as : <br /><strong><i>{{prediction}} </i></strong> <br /> with {{accuracy}} % accuracy
+                    </span>
+                </div>
+                <div class="container-login100-form-btn">
+                    <div class="wrap-login100-form-btn">
+                        <div class="login100-form-bgbtn"></div>
+                        <button type="button" onclick="location.href='../image-classification'" class="login100-form-btn">
+                            Try Again !
+                        </button>
+                    </div>
+                </div>
+                {% else %}
+                <form method="post" action="predict">
+                    {% csrf_token %}
+                    <div class="wrap-input100 m-t-30">
+                        <input class="input100" required type="file" name="files[]" id="files" accept="image/*" value="">
+
+                        <input type="hidden" name="url" id="url" value="">
+                        <span>Upload Image</span>
+                    </div>
+
+                    <div class="text-center p-t-30 p-b-5">
+                        <span id="upload_status">
+                            
+                        </span>
+                    </div>
+
+                    <button style="display:none;" type="submit" id="form1" name="form1"></button>
+                    <div class="container-login100-form-btn">
+                        <div class="wrap-login100-form-btn">
+                            <div class="login100-form-bgbtn"></div>
+                            <button type="button" onclick="uploadImage()" class="login100-form-btn">
+                                Classify
+                            </button>
+                        </div>
+                    </div>
+
+
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+        <script>
+			alert('{{message}}')
+        </script>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+
+    <div id="dropDownSelect1"></div>
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-storage.js"></script>
+
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyAPgCU6-PXQITaSOjTI6pIWumRR3mrHzKg",
+            authDomain: "mlprojects-bce0b.firebaseapp.com",
+            databaseURL: "https://mlprojects-bce0b.firebaseio.com",
+            projectId: "mlprojects-bce0b",
+            storageBucket: "mlprojects-bce0b.appspot.com",
+            messagingSenderId: "618925880477",
+            appId: "1:618925880477:web:d46100558690902cc71074"
+        };
+        firebase.initializeApp(firebaseConfig);
+        function uploadImage() {
+            var storage = firebase.storage();
+            if (document.getElementById('files').value.length == 0) {
+                document.getElementById('form1').click();
+            }
+
+            else {
+                var file = document.getElementById('files').files[0];
+                var storageRef = storage.ref();
+                var thisref = storageRef.child(file.name).put(file);
+                var status = document.getElementById('upload_status');
+                thisref.on('state_changed', function (snapshot) {
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    status.innerHTML = 'Upload is ' + parseInt(progress) + ' % done';
+                    switch (snapshot.state) {
+                        case firebase.storage.TaskState.PAUSED: // or 'paused'
+                            status.innerHTML = 'Upload is paused. Try again.';
+
+                            break;
+
+                    }
+                }, function (error) { console.log(error); },
+                    function () {
+                        thisref.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                            document.getElementById('url').value = downloadURL
+                            status.innerHTML = 'Predicting...'
+                            document.getElementById('form1').click();
+                        });
+
+                    });
+            }
+        }
+    </script>
+
+    <script src="{% static 'min2.js' %}"></script>
+    <!--===============================================================================================-->
+    <script src="{% static 'vendor/jquery/jquery-3.2.1.min.js' %}"></script>
+    <!--===============================================================================================-->
+    <script src="{% static 'vendor/animsition/js/animsition.min.js' %}"></script>
+    <!--===============================================================================================-->
+    <script src="{% static 'vendor/bootstrap/js/popper.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+    <!--===============================================================================================-->
+    <script src="{% static 'vendor/select2/select2.min.js' %}"></script>
+    <!--===============================================================================================-->
+    <script src="{% static 'vendor/daterangepicker/moment.min.js' %}"></script>
+    <script src="{% static 'vendor/daterangepicker/daterangepicker.js' %}"></script>
+    <!--===============================================================================================-->
+    <script src="{% static 'vendor/countdowntime/countdowntime.js' %}"></script>
+    <!--===============================================================================================-->
+    <script src="{% static 'js/main.js' %}"></script>
+
+</body>
+</html>

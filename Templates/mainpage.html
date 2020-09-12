@@ -1,0 +1,61 @@
+﻿{% load static %}
+<!Doctype html>
+<html>
+<head>
+    <title>Machine Learning Models</title>
+    <meta charset="utf-8">
+    <meta name="description" content="This is the main page.">
+    <meta name="author" content="Tushar Sethi">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="{% static 'contract.png' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'contract.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'style2.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans&display=swap" rel="stylesheet">
+
+</head>
+<body onload="readyToRun()">
+    <div id="loading1"><img src="{% static 'loader.gif' %}"></div>
+    <div class="everything text-center">
+        <div class="container">
+            <div class="my-container text-center">
+                <div class="text-center" style="margin-top:20px;">
+                    <img src="../../static/contract.png" width="40px" />
+                    <h2 class="text-center heading">Sethi - Machine Learning Models</h2>
+                </div>
+
+                <br />
+
+                <button onclick="location.href='../image-classification'" class="new-list-btn" type="button">Image Classification - 1000 Classes</button><br />
+                <button onclick="location.href='../facemask-detection'" class="new-list-btn" type="button">Face Mask Detection</button><br />
+                <button onclick="location.href='../facemask-detection-realtime'" class="new-list-btn" type="button">Face Mask Detection - Realtime</button><br />
+                <button class="new-list-btn" type="button">Coming soon...</button>
+                <button class="new-list-btn" type="button">Coming soon...</button>
+            </div>
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+        <script>
+			alert('{{message}}')
+        </script>
+        {% endfor %}
+        {% endif %}
+    </div>
+    <div class="footer text-center p-t-60">
+        <hr>
+        <span class="made-by">Made by <a href="https://www.linkedin.com/in/tusharsethi007/">Tushar Sethi</a></span>
+    </div>
+    <script>
+        function readyToRun() {
+            var loader = document.getElementById('loading1')
+            loader.style.display = 'none';
+        }
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+</html>

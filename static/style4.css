@@ -1,0 +1,13 @@
+.gotohome {
+    margin-top: 5%;
+    border: none;
+    color: #aaaaaa;
+    font-family: 'Balsamiq Sans', cursive;
+    border: solid #aaaaaa;
+    padding: 5px;
+}
+
+.gotohome:hover {
+    text-decoration: none;
+    color: #aaaaaa;
+}
